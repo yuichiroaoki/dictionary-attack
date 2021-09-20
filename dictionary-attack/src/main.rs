@@ -19,7 +19,7 @@ fn validate_password(pass: &String, _max_password_length: usize) -> Result<Strin
 mod lib;
 
 fn main() {
-    const MAX_PASSWORD_LENGTH: usize = 6;
+    const MAX_PASSWORD_LENGTH: usize = 5;
 
     println!("Please input password.");
     let mut password = String::new();

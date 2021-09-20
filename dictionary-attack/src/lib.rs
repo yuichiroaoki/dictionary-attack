@@ -53,4 +53,7 @@ fn test_generate_string() {
     assert_eq!("aa", String::from_utf8(generate_string(27)).unwrap());
     assert_eq!("zz", String::from_utf8(generate_string(702)).unwrap());
     assert_eq!("aaa", String::from_utf8(generate_string(703)).unwrap());
+    assert_eq!("zzz", String::from_utf8(generate_string(18278)).unwrap());
+    assert_eq!("zzzz", String::from_utf8(generate_string(475254)).unwrap());
+    assert_eq!("zzzzz", String::from_utf8(generate_string(12356630)).unwrap());
 }
