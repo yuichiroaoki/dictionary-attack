@@ -1,11 +1,9 @@
 use std::io;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
 
 fn validate_password(pass: &String, _max_password_length: usize) -> Result<String, ()> {
     let result: bool = !pass.trim().is_empty() && pass.trim().len() < _max_password_length + 1;
-
-    println!("{}", pass.len());
 
     if result {
         let new_pass = pass.trim().clone();
@@ -37,7 +35,6 @@ fn main() {
         .spinner(&DOTS)
         .text("cracking")
         .start();
-    std::thread::sleep(Duration::from_secs(3));
 
     for i in 1.. {
         if result == String::from_utf8(lib::generate_string(i)).unwrap() {
