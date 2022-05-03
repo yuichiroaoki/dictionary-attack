@@ -1,8 +1,18 @@
+use clap::Parser;
+use std::fs::File;
 use std::io;
+use std::io::prelude::*;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
-use std::fs::File;
-use std::io::prelude::*;
+
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Args {
+    #[clap(short)]
+    dict: bool,
+    // #[clap(short, long)]
+    // key: String,
+}
 
 fn validate_password(pass: &String, _max_password_length: usize) -> Result<String, ()> {
     let result: bool = !pass.trim().is_empty() && pass.trim().len() < _max_password_length + 1;
@@ -21,6 +31,8 @@ fn validate_password(pass: &String, _max_password_length: usize) -> Result<Strin
 mod lib;
 
 fn main() {
+    let args = Args::parse();
+
     const MAX_PASSWORD_LENGTH: usize = 10;
 
     println!("Please input password.");
@@ -37,24 +49,34 @@ fn main() {
         .spinner(&DOTS)
         .text("cracking")
         .start();
-    
-    let mut f = File::open("sample/sample1.txt").expect("file not found");
 
-    let mut contents = String::new();
-    f.read_to_string(&mut contents)
-        // ファイルの読み込み中に問題がありました
-        .expect("something went wrong reading the file");
+    if args.dict {
+        let mut f = File::open("sample/sample1.txt").expect("file not found");
 
-    let v_contents: Vec<&str> = contents.split('\n').collect();
+        let mut contents = String::new();
+        f.read_to_string(&mut contents)
+            // ファイルの読み込み中に問題がありました
+            .expect("something went wrong reading the file");
 
-
-    for i in 0..v_contents.len() {
-        if result == v_contents[i] {
-            println!("no.{}", i);
-            println!("found {}", result);
-            break;
-        } else {
-            continue;
+        let v_contents: Vec<&str> = contents.split('\n').collect();
+        for i in 0..v_contents.len() {
+            if result == v_contents[i] {
+                println!("no.{}", i);
+                println!("found {}", result);
+                break;
+            } else {
+                continue;
+            }
+        }
+    } else {
+        for i in 1..100000000 {
+            if result == lib::number_to_string(i) {
+                println!("no.{}", i);
+                println!("found {}", result);
+                break;
+            } else {
+                continue;
+            }
         }
     }
 
@@ -62,4 +84,3 @@ fn main() {
     let new_now = Instant::now();
     println!("{:?}", new_now.saturating_duration_since(now));
 }
-
