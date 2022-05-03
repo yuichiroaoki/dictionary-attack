@@ -4,6 +4,28 @@ pub fn generate_string(i: u64) -> Vec<u8> {
     generate_char_array(i, &mut array).to_vec()
 }
 
+const CHARSET: &str = "abcdefghijklmnopqrstuvwxyz0123456789";
+const CHAR_COUNT: usize = 35;
+
+fn generate_charactor(i: u8) -> char {
+    // if i > 0x7f {
+    //     panic!("generate_charactor: i > 0x7f");
+    // }
+    // let charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    CHARSET.chars().nth(i as usize).unwrap()
+}
+
+#[test]
+fn test_generate_charactor() {
+    assert_eq!('a', generate_charactor(0));
+    assert_eq!('z', generate_charactor(25));
+    assert_eq!('0', generate_charactor(26));
+    assert_eq!('9', generate_charactor(CHAR_COUNT as u8));
+}
+
+// pub fn number_to_string(i: u64) -> String {
+// }
+
 
 /// Generates a string slice (in u8) to crack based on an index seed.
 /// An array needs to be passed to avoid performance penalties with allocating a Vec.
