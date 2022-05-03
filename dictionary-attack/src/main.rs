@@ -1,6 +1,8 @@
 use std::io;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
+use std::fs::File;
+use std::io::prelude::*;
 
 fn validate_password(pass: &String, _max_password_length: usize) -> Result<String, ()> {
     let result: bool = !pass.trim().is_empty() && pass.trim().len() < _max_password_length + 1;
@@ -19,7 +21,7 @@ fn validate_password(pass: &String, _max_password_length: usize) -> Result<Strin
 mod lib;
 
 fn main() {
-    const MAX_PASSWORD_LENGTH: usize = 5;
+    const MAX_PASSWORD_LENGTH: usize = 10;
 
     println!("Please input password.");
     let mut password = String::new();
@@ -35,9 +37,19 @@ fn main() {
         .spinner(&DOTS)
         .text("cracking")
         .start();
+    
+    let mut f = File::open("sample/sample1.txt").expect("file not found");
 
-    for i in 1.. {
-        if result == String::from_utf8(lib::generate_string(i)).unwrap() {
+    let mut contents = String::new();
+    f.read_to_string(&mut contents)
+        // ファイルの読み込み中に問題がありました
+        .expect("something went wrong reading the file");
+
+    let v_contents: Vec<&str> = contents.split('\n').collect();
+
+
+    for i in 0..v_contents.len() {
+        if result == v_contents[i] {
             println!("no.{}", i);
             println!("found {}", result);
             break;
@@ -50,3 +62,4 @@ fn main() {
     let new_now = Instant::now();
     println!("{:?}", new_now.saturating_duration_since(now));
 }
+
