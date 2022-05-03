@@ -20,7 +20,7 @@ mod lib;
 
 fn main() {
     const MAX_PASSWORD_LENGTH: usize = 5;
-
+    lib::number_to_string(35);
     println!("Please input password.");
     let mut password = String::new();
     io::stdin()

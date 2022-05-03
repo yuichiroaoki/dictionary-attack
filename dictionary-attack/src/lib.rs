@@ -5,26 +5,47 @@ pub fn generate_string(i: u64) -> Vec<u8> {
 }
 
 const CHARSET: &str = "abcdefghijklmnopqrstuvwxyz0123456789";
-const CHAR_COUNT: usize = 35;
+const CHAR_COUNT: usize = 36;
 
-fn generate_charactor(i: u8) -> char {
+fn generate_charactor(n: u8) -> char {
     // if i > 0x7f {
     //     panic!("generate_charactor: i > 0x7f");
     // }
     // let charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let i = n - 1;
+
     CHARSET.chars().nth(i as usize).unwrap()
 }
 
 #[test]
 fn test_generate_charactor() {
-    assert_eq!('a', generate_charactor(0));
-    assert_eq!('z', generate_charactor(25));
-    assert_eq!('0', generate_charactor(26));
-    assert_eq!('9', generate_charactor(CHAR_COUNT as u8));
+    assert_eq!('a', generate_charactor(1));
+    assert_eq!('z', generate_charactor(26));
+    assert_eq!('0', generate_charactor(27));
+    assert_eq!('8', generate_charactor(35));
+    assert_eq!('9', generate_charactor(36));
 }
 
-// pub fn number_to_string(i: u64) -> String {
-// }
+pub fn number_to_string(i: u64) -> String {
+    let mut result = String::new();
+    let mut i = i;
+    while i > 0 {
+        let remained: u8 = (i as usize % CHAR_COUNT) as u8;
+        let c = generate_charactor(remained);
+        result.push(c);
+        i /= CHAR_COUNT as u64;
+    }
+    result.chars().rev().collect()
+}
+
+#[test]
+fn test_number_to_string() {
+    assert_eq!(String::from('a'), number_to_string(1));
+    assert_eq!(String::from('b'), number_to_string(2));
+    assert_eq!(String::from('z'), number_to_string(26));
+    // assert_eq!(String::from('9'), number_to_string(36));
+    assert_eq!(String::from("aa"), number_to_string(37));
+}
 
 
 /// Generates a string slice (in u8) to crack based on an index seed.
