@@ -1,45 +1,51 @@
 const CHARSET: &str = "abcdefghijklmnopqrstuvwxyz0123456789";
 const CHAR_COUNT: usize = 36;
 
-fn generate_charactor(i: u8) -> char {
+fn generate_charactor(n: u8) -> char {
+    let i = n - 1;
     CHARSET.chars().nth(i as usize).unwrap()
 }
 
 #[test]
 fn test_generate_charactor() {
-    assert_eq!('a', generate_charactor(0));
+    assert_eq!('a', generate_charactor(1));
     // assert_eq!('z', generate_charactor(26));
     // assert_eq!('0', generate_charactor(27));
     // assert_eq!('8', generate_charactor(35));
-    assert_eq!('9', generate_charactor(35));
+    assert_eq!('9', generate_charactor(36));
 }
 
-pub fn number_to_string(i: u64) -> String {
+pub fn number_to_string(i: i64) -> String {
     let mut result = String::new();
     let mut i = i;
-    if i == 0 {
-        result.push('a');
-    }
     while i > 0 {
-        let remainder: u8 = (i as usize % CHAR_COUNT) as u8;
-        let c = generate_charactor(remainder);
+        let remainder = i as usize % CHAR_COUNT;
+        let remainder_zero_shifted = if remainder == 0 {
+            CHAR_COUNT
+        } else {
+            remainder
+        };
+        let c = generate_charactor(remainder_zero_shifted as u8);
         result.push(c);
-        i /= CHAR_COUNT as u64;
+        if i == CHAR_COUNT as i64 {
+            break;
+        };
+        i /= CHAR_COUNT as i64;
     }
     result.chars().rev().collect()
 }
 
 #[test]
 fn test_number_to_string() {
-    assert_eq!(String::from('a'), number_to_string(0));
-    // assert_eq!(String::from('b'), number_to_string(2));
-    // assert_eq!(String::from('z'), number_to_string(26));
-    // assert_eq!(String::from('8'), number_to_string(35));
-    assert_eq!(String::from('9'), number_to_string(35));
-    assert_eq!(String::from("aa"), number_to_string(36));
+    assert_eq!(String::from('a'), number_to_string(1));
+    assert_eq!(String::from('b'), number_to_string(2));
+    assert_eq!(String::from('z'), number_to_string(26));
+    assert_eq!(String::from('8'), number_to_string(35));
+    assert_eq!(String::from('9'), number_to_string(36));
+    assert_eq!(String::from("aa"), number_to_string(37));
+    assert_eq!(String::from("ab"), number_to_string(38));
+    assert_eq!(String::from("ac"), number_to_string(39));
 }
-
-
 
 // /// Generates a string slice (in u8) to crack based on an index seed.
 // /// An array needs to be passed to avoid performance penalties with allocating a Vec.
@@ -80,7 +86,6 @@ fn test_number_to_string() {
 //     assert_eq!(3, generate_string(703).len());
 // }
 
-
 // #[test]
 // fn test_generate_string() {
 //     assert_eq!("", String::from_utf8(generate_string(0)).unwrap());
@@ -93,7 +98,6 @@ fn test_number_to_string() {
 //     assert_eq!("zzzz", String::from_utf8(generate_string(475254)).unwrap());
 //     assert_eq!("zzzzz", String::from_utf8(generate_string(12356630)).unwrap());
 // }
-
 
 // /// Generates a string Vec. For use with tests.
 // pub fn generate_string(i: u64) -> Vec<u8> {

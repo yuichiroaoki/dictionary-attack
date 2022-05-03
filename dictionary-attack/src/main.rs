@@ -32,7 +32,7 @@ mod lib;
 
 fn main() {
     let args = Args::parse();
-
+    lib::number_to_string(36);
     const MAX_PASSWORD_LENGTH: usize = 10;
 
     println!("Please input password.");
