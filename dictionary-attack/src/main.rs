@@ -60,7 +60,7 @@ fn main() {
     } else {
         for i in 1..10000000000000 {
             if result == lib::number_to_string(i) {
-                println!("no.{}", i);
+                println!("\nno.{}", i);
                 println!("found {}", result);
                 break;
             } else {
