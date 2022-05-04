@@ -1,6 +1,6 @@
 use clap::Parser;
-use std::fs::File;
-use std::io::prelude::*;
+// use std::fs::File;
+// use std::io::prelude::*;
 use std::thread;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
@@ -41,15 +41,13 @@ fn main() {
         .spinner(&DOTS)
         .text("cracking")
         .start();
-
     if args.dict {
-        let result_cp = result.clone();
-        if let Ok(lines) = files::read_lines("sample/sample1.txt") {
-            thread::spawn(move || {
+        if let Ok(lines) = files::read_lines("sample/xato-net-10-million-passwords-dup.txt") {
+            let handle = thread::spawn(move || {
                 for line in lines {
                     if let Ok(ip) = line {
                         if result == ip {
-                            println!("found {}", result);
+                            println!("\nfound {}", result);
                             break;
                         } else {
                             continue;
@@ -57,19 +55,7 @@ fn main() {
                     }
                 }
             });
-        }
-
-        if let Ok(lines) = files::read_lines("sample/sample2.txt") {
-            for line in lines {
-                if let Ok(ip) = line {
-                    if result_cp == ip {
-                        println!("found {}", result_cp);
-                        break;
-                    } else {
-                        continue;
-                    }
-                }
-            }
+            handle.join().unwrap();
         }
     } else {
         for i in 1..10000000000000 {
