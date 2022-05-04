@@ -1,6 +1,5 @@
 use clap::Parser;
 use std::fs::File;
-// use std::io;
 use std::io::prelude::*;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
@@ -32,12 +31,7 @@ fn main() {
     // wifi::get_wifi_name();
     // wifi::connect_to_wifi(&args.name, &args.password);
 
-    println!("Please input password.");
     let password = args.password;
-    // let mut password = String::new();
-    // io::stdin()
-    //     .read_line(&mut password)
-    //     .expect("Failed to read line");
     let result = validate::validate_password(&password, MAX_PASSWORD_LENGTH).unwrap();
 
     let now = Instant::now();
