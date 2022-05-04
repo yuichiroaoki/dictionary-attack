@@ -47,7 +47,8 @@ fn main() {
         .start();
 
     if args.dict {
-        let mut f = File::open("sample/sample1.txt").expect("file not found");
+        let mut f = File::open("sample/xato-net-10-million-passwords-dup.txt").expect("file not found");
+        //let mut f = File::open("sample/xato-net-10-million-passwords.txt").expect("file not found");
 
         let mut contents = String::new();
         f.read_to_string(&mut contents)
