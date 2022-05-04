@@ -1,4 +1,4 @@
- # xato-net-10-million-passwords.txtから指定のパスワード探す
+  # xato-net-10-million-passwords.txtから指定のパスワード探す
 
 import glob
 import time
@@ -10,7 +10,7 @@ print(f'password: {password}')
 # 計測開始(ナノ秒)
 start_time = time.perf_counter_ns()
 # 指定ディレクトリ内からファイル名を取得 
-files = glob.glob("./xato-net-10-million-passwords.txt")
+files = glob.glob("./xato-net-10-million-passwords-dup.txt")
 # ファイルを一つずつ処理
 for file in files:
     try:
