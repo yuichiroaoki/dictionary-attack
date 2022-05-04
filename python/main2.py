@@ -7,8 +7,8 @@ from pathlib import Path
 import threading
 
 password = input("Please input password.\n")
-file1 = glob.glob("./split_000.txt")
-file2 = glob.glob("./split_001.txt")
+file1 = glob.glob("./sample/split_000.txt")
+file2 = glob.glob("./sample/split_001.txt")
 
 # split_000.txtの処理
 def proc1():
@@ -48,7 +48,7 @@ def proc2():
     start_time = time.perf_counter_ns()
     # 何個目で当てたかのカウント
     count = 0
-
+ 
     # ファイルを一つずつ処理
     for file in file2:
         print(f'⠏cracking2') 
