@@ -12,4 +12,3 @@ nmcli d wifi connect NAME password PASSWORD
 * https://github.com/amcsi/rust-experimenting-password-cracker
 * https://linuxhint.com/3-ways-to-connect-to-wifi-from-the-command-line-on-debian/
 
-

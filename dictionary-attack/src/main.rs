@@ -10,38 +10,28 @@ use terminal_spinners::{SpinnerBuilder, DOTS};
 struct Args {
     #[clap(short)]
     dict: bool,
-    // #[clap(short, long)]
-    // key: String,
-}
-
-fn validate_password(pass: &String, _max_password_length: usize) -> Result<String, ()> {
-    let result: bool = !pass.trim().is_empty() && pass.trim().len() < _max_password_length + 1;
-
-    if result {
-        let new_pass = pass.trim().clone();
-        Ok(String::from(new_pass))
-    } else {
-        Err(println!(
-            "password should be 1 ~ {} words.",
-            _max_password_length
-        ))
-    }
+    #[clap(short, long)]
+    name: String,
+    #[clap(short, long)]
+    password: String,
 }
 
 mod lib;
+mod validate;
+mod wifi;
 
 fn main() {
     let args = Args::parse();
     lib::number_to_string(36);
     const MAX_PASSWORD_LENGTH: usize = 10;
-
+    // wifi::get_wifi_name();
+    wifi::connect_to_wifi(&args.name, &args.password);
     println!("Please input password.");
     let mut password = String::new();
     io::stdin()
         .read_line(&mut password)
         .expect("Failed to read line");
-    // let password_bytes = Vec::from(password);
-    let result = validate_password(&password, MAX_PASSWORD_LENGTH).unwrap();
+    let result = validate::validate_password(&password, MAX_PASSWORD_LENGTH).unwrap();
     println!("password: {}", result);
     let now = Instant::now();
 

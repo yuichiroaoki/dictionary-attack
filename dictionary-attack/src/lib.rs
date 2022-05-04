@@ -1,6 +1,7 @@
 const CHARSET: &str = "abcdefghijklmnopqrstuvwxyz0123456789";
 const CHAR_COUNT: usize = 36;
 
+
 fn generate_charactor(n: u8) -> char {
     let i = n - 1;
     CHARSET.chars().nth(i as usize).unwrap()
