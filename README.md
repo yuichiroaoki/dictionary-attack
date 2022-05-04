@@ -7,6 +7,17 @@ sudo iwlist wlo1 scan | grep ESSID
 nmcli d wifi connect NAME password PASSWORD
 ```
 
+## Performance Test
+dictionary mode
+```bash
+cargo run -- -d -p --password PASSWORD
+```
+
+brute force mode
+```bash
+cargo run -- -p --password PASSWORD
+```
+
 
 ## References
 * https://github.com/amcsi/rust-experimenting-password-cracker

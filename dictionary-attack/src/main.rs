@@ -16,7 +16,7 @@ struct Args {
     performance: bool,
 
     /// password for wifi
-    #[clap(short, long)]
+    #[clap(long)]
     password: String,
 }
 
@@ -65,7 +65,7 @@ fn main() {
             }
         }
     } else {
-        for i in 1..100000000 {
+        for i in 1..10000000000000 {
             if result == lib::number_to_string(i) {
                 println!("no.{}", i);
                 println!("found {}", result);
