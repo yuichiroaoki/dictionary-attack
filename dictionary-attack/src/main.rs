@@ -37,27 +37,30 @@ fn main() {
         .spinner(&DOTS)
         .text("cracking")
         .start();
-    
-    let mut f = File::open("sample/sample1.txt").expect("file not found");
+    let mut v_contents = Vec::new();
 
-    let mut contents = String::new();
-    f.read_to_string(&mut contents)
-        // ファイルの読み込み中に問題がありました
-        .expect("something went wrong reading the file");
+    for k in 1..4 {
+        let mut f = File::open(format!("sample/sample{}.txt", k)).expect("file not found");
 
-    let v_contents: Vec<&str> = contents.split('\n').collect();
-
-
-    for i in 0..v_contents.len() {
-        if result == v_contents[i] {
-            println!("no.{}", i);
-            println!("found {}", result);
-            break;
-        } else {
-            continue;
-        }
+        let mut contents = String::new();
+        f.read_to_string(&mut contents)
+            // ファイルの読み込み中に問題がありました
+            .expect("something went wrong reading the file");
+        let  v_contents_pre: Vec<&str> =  &mut contents.split('\n').collect();
+        v_contents.push(v_contents_pre);
     }
 
+    for j in 0..v_contents.len(){
+        for i in 0..v_contents[0].len() {
+            if result == v_contents[j][i] {
+                println!("no.{}", i);
+                println!("found {}", result);
+                break;
+            } else {
+                continue;
+            }
+        }
+    }
     handle.done();
     let new_now = Instant::now();
     println!("{:?}", new_now.saturating_duration_since(now));
