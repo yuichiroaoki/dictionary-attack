@@ -33,9 +33,8 @@ jobs:
           override: true
 
       - name: Run cargo check
-        uses: actions-rs/cargo@v1
+      - run: cargo check
         with:
-          command: check
           working-directory: ./dictionary-attack
 
 
@@ -54,9 +53,8 @@ jobs:
           override: true
 
       - name: Run cargo test
-        uses: actions-rs/cargo@v1
+        run: cargo test
         with:
-          command: test
           working-directory: ./dictionary-attack
   lints:
     name: Lints
@@ -74,15 +72,11 @@ jobs:
           components: rustfmt, clippy
 
       - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
+        run: cargo fmt --all -- --check 
         with:
-          command: fmt
-          args: --all -- --check
           working-directory: ./dictionary-attack
 
       - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
+        run: cargo clippy -- -D warnings
         with:
-          command: clippy
-          args: -- -D warnings
           working-directory: ./dictionary-attack
