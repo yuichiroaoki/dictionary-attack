@@ -1,6 +1,6 @@
 use clap::Parser;
-// use std::fs::File;
-// use std::io::prelude::*;
+use std::sync::mpsc;
+use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
@@ -32,6 +32,7 @@ fn main() {
     // wifi::get_wifi_name();
     // wifi::connect_to_wifi(&args.name, &args.password);
 
+    // let (tx, rx) = mpsc::channel();
     let password = args.password;
     let result = validate::validate_password(&password, MAX_PASSWORD_LENGTH).unwrap();
 
@@ -43,31 +44,61 @@ fn main() {
         .start();
     if args.dict {
         if let Ok(lines) = files::read_lines("sample/xato-net-10-million-passwords-dup.txt") {
-            let handle = thread::spawn(move || {
-                for line in lines {
-                    if let Ok(ip) = line {
-                        if result == ip {
-                            println!("\nfound {}", result);
-                            break;
-                        } else {
-                            continue;
-                        }
+            // for i in 0..8 {
+            //     let handle = thread::spawn(move || {
+            //         for line in lines.step_by(i * 8) {
+            //             if let Ok(ip) = line {
+            //                 if result == ip {
+            //                     println!("\nfound {}", result);
+            //                     tx.send(result).unwrap();
+            //                     break;
+            //                 } else {
+            //                     continue;
+            //                 }
+            //             }
+            //         }
+            //     });
+            //     handle.join().unwrap();
+            // }
+        }
+    } else {
+        let password = Arc::new(Mutex::new(result));
+        let found = Arc::new(Mutex::new(false));
+        let mut handles = vec![];
+        let max_count = 100000000;
+
+        // 8 threads
+        for m in 1..9 {
+            let password = Arc::clone(&password);
+            let found = Arc::clone(&found);
+            let t_handle = thread::spawn(move || {
+                for i in 0..max_count {
+                    let word = password.lock().unwrap();
+                    let mut found_key = found.lock().unwrap();
+                    if *found_key {
+                        break;
+                    }
+                    if *word == lib::number_to_string(i * m) {
+                        println!("\nno.{}", i * m);
+                        println!("found {}", *word);
+                        *found_key = true;
+                        break;
+                    } else {
+                        continue;
                     }
                 }
             });
-            handle.join().unwrap();
+            handles.push(t_handle)
         }
-    } else {
-        for i in 1..10000000000000 {
-            if result == lib::number_to_string(i) {
-                println!("\nno.{}", i);
-                println!("found {}", result);
-                break;
-            } else {
-                continue;
-            }
+
+        for hd in handles {
+            hd.join().unwrap();
         }
     }
+    // for received in rx {
+    //     println!("Got: {}", received);
+    // }
+
     handle.done();
     let new_now = Instant::now();
     println!("{:?}", new_now.saturating_duration_since(now));
