@@ -36,6 +36,8 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: check
+          working-directory: ./dictionary-attack
+
 
   test:
     name: Test Suite
@@ -55,7 +57,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-
+          working-directory: ./dictionary-attack
   lints:
     name: Lints
     runs-on: ubuntu-latest
@@ -76,9 +78,11 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
+          working-directory: ./dictionary-attack
 
       - name: Run cargo clippy
         uses: actions-rs/cargo@v1
         with:
           command: clippy
           args: -- -D warnings
+          working-directory: ./dictionary-attack
