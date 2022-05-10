@@ -42,28 +42,32 @@ fn main() {
         .spinner(&DOTS)
         .text("cracking")
         .start();
+
+
+    let password = Arc::new(Mutex::new(result));
+    let found = Arc::new(Mutex::new(false));
     if args.dict {
-        if let Ok(lines) = files::read_lines("sample/xato-net-10-million-passwords-dup.txt") {
-            // for i in 0..8 {
-            //     let handle = thread::spawn(move || {
-            //         for line in lines.step_by(i * 8) {
-            //             if let Ok(ip) = line {
-            //                 if result == ip {
-            //                     println!("\nfound {}", result);
-            //                     tx.send(result).unwrap();
-            //                     break;
-            //                 } else {
-            //                     continue;
-            //                 }
-            //             }
-            //         }
-            //     });
-            //     handle.join().unwrap();
-            // }
-        }
+        // let mut handles = vec![];
+
+        // for i in 0..8 {
+        //     if let Ok(lines) = files::read_lines("sample/xato-net-10-million-passwords-dup.txt") {
+        //         let handle = thread::spawn(move || {
+        //             for line in lines.step_by(i * 8) {
+        //                 if let Ok(ip) = line {
+        //                     if result == ip {
+        //                         println!("\nfound {}", result);
+        //                         tx.send(result).unwrap();
+        //                         break;
+        //                     } else {
+        //                         continue;
+        //                     }
+        //                 }
+        //             }
+        //         });
+        //         handle.join().unwrap();
+        //     }
+        // }
     } else {
-        let password = Arc::new(Mutex::new(result));
-        let found = Arc::new(Mutex::new(false));
         let mut handles = vec![];
         let max_count = 100000000;
 
