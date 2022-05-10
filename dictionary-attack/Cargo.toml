@@ -8,3 +8,4 @@ edition = "2018"
 [dependencies]
 terminal-spinners = "0.3.1"
 clap = { version = "3.0", features = ["derive"] }
+dotenv = "0.15.0"

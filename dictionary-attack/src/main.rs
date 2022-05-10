@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
+use dotenv::dotenv;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -26,6 +27,8 @@ mod validate;
 mod wifi;
 
 fn main() {
+    dotenv().ok();
+
     let args = Args::parse();
     lib::number_to_string(36);
     const MAX_PASSWORD_LENGTH: usize = 10;
