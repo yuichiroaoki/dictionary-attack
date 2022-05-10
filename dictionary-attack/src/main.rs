@@ -1,10 +1,10 @@
 use clap::Parser;
+use dotenv::dotenv;
 use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
-use dotenv::dotenv;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -45,7 +45,6 @@ fn main() {
         .spinner(&DOTS)
         .text("cracking")
         .start();
-
 
     let password = Arc::new(Mutex::new(result));
     let found = Arc::new(Mutex::new(false));
