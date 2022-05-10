@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 wifi-rs = "0.2.2"
+dotenv = "0.15.0"
