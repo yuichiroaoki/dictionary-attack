@@ -1,7 +1,6 @@
 use clap::Parser;
-use std::fs::File;
-// use std::io;
-use std::io::prelude::*;
+use std::sync::mpsc;
+use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
@@ -21,6 +20,7 @@ struct Args {
     password: String,
 }
 
+mod files;
 mod lib;
 mod validate;
 mod wifi;
@@ -32,12 +32,8 @@ fn main() {
     // wifi::get_wifi_name();
     // wifi::connect_to_wifi(&args.name, &args.password);
 
-    println!("Please input password.");
+    // let (tx, rx) = mpsc::channel();
     let password = args.password;
-    // let mut password = String::new();
-    // io::stdin()
-    //     .read_line(&mut password)
-    //     .expect("Failed to read line");
     let result = validate::validate_password(&password, MAX_PASSWORD_LENGTH).unwrap();
 
     let now = Instant::now();
@@ -47,56 +43,66 @@ fn main() {
         .text("cracking")
         .start();
 
+
+    let password = Arc::new(Mutex::new(result));
+    let found = Arc::new(Mutex::new(false));
     if args.dict {
-        let mut f1 = File::open("sample/sample1.txt").expect("file not found");
-        let mut f2 = File::open("sample/sample2.txt").expect("file not found");
-        //let mut f = File::open("sample/xato-net-10-million-passwords.txt").expect("file not found");
+        // let mut handles = vec![];
 
-        let mut contents1 = String::new();
-        f1.read_to_string(&mut contents1)
-            // ファイルの読み込み中に問題がありました
-            .expect("something went wrong reading the file");
-        let mut contents2 = String::new();
-        f2.read_to_string(&mut contents2)
-            // ファイルの読み込み中に問題がありました
-            .expect("something went wrong reading the file");
-        let v_contents1: Vec<&str> = contents1.split('\n').collect();
-        let v_contents2: Vec<&str> = contents2.split('\n').collect();
-
-        let handle = thread::spawn(|| {
-            for i in 0..v_contents1.len() {
-                if result == v_contents1[i] {
-                    println!("\nno.{}", i);
-                    println!("found {}", result);
-                    break;
-                } else {
-                    continue;
-                }
-            }
-            // thread code
-        });
-
-        for i in 0..v_contents2.len() {
-            if result == v_contents2[i] {
-                println!("\nno.{}", i);
-                println!("found {}", result);
-                break;
-            } else {
-                continue;
-            }
-        }
-        handle.join().unwrap();
+        // for i in 0..8 {
+        //     if let Ok(lines) = files::read_lines("sample/xato-net-10-million-passwords-dup.txt") {
+        //         let handle = thread::spawn(move || {
+        //             for line in lines.step_by(i * 8) {
+        //                 if let Ok(ip) = line {
+        //                     if result == ip {
+        //                         println!("\nfound {}", result);
+        //                         tx.send(result).unwrap();
+        //                         break;
+        //                     } else {
+        //                         continue;
+        //                     }
+        //                 }
+        //             }
+        //         });
+        //         handle.join().unwrap();
+        //     }
+        // }
     } else {
-        for i in 1..10000000000000 {
-            if result == lib::number_to_string(i) {
-                println!("\nno.{}", i);
-                println!("found {}", result);
-                break;
-            } else {
-                continue;
-            }
+        let mut handles = vec![];
+        let max_count = 100000000;
+
+        // 8 threads
+        for m in 1..9 {
+            let password = Arc::clone(&password);
+            let found = Arc::clone(&found);
+            let t_handle = thread::spawn(move || {
+                for i in 0..max_count {
+                    let word = password.lock().unwrap();
+                    let mut found_key = found.lock().unwrap();
+                    if *found_key {
+                        break;
+                    }
+                    if *word == lib::number_to_string(i * m) {
+                        println!("\nno.{}", i * m);
+                        println!("found {}", *word);
+                        *found_key = true;
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
+            });
+            handles.push(t_handle)
+        }
+
+        for hd in handles {
+            hd.join().unwrap();
         }
     }
+    // for received in rx {
+    //     println!("Got: {}", received);
+    // }
+
     handle.done();
     let new_now = Instant::now();
     println!("{:?}", new_now.saturating_duration_since(now));
