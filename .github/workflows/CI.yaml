@@ -33,7 +33,7 @@ jobs:
           override: true
 
       - name: Run cargo check
-      - run: cargo check
+        run: cargo check
         with:
           working-directory: ./dictionary-attack
 
