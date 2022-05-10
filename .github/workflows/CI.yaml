@@ -33,9 +33,9 @@ jobs:
           override: true
 
       - name: Run cargo check
-        run: cargo check
-        with:
-          working-directory: ./dictionary-attack
+        run: | 
+          cargo check
+        working-directory: ./dictionary-attack
 
 
   test:
@@ -53,9 +53,9 @@ jobs:
           override: true
 
       - name: Run cargo test
-        run: cargo test
-        with:
-          working-directory: ./dictionary-attack
+        run: | 
+          cargo test
+        working-directory: ./dictionary-attack
   lints:
     name: Lints
     runs-on: ubuntu-latest
@@ -74,11 +74,9 @@ jobs:
       - name: Run cargo fmt
         run: |
           cargo fmt --all -- --check 
-        with:
-          working-directory: ./dictionary-attack
+        working-directory: ./dictionary-attack
 
       - name: Run cargo clippy
         run: | 
           cargo clippy -- -D warnings
-        with:
-          working-directory: ./dictionary-attack
+        working-directory: ./dictionary-attack
