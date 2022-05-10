@@ -16,12 +16,17 @@ struct Args {
     #[clap(short)]
     performance: bool,
 
+    /// connecting WiFi mode
+    #[clap(long)]
+    wifi: bool,
+
     /// password for wifi
     #[clap(long)]
     password: String,
 }
 
 mod files;
+mod utils;
 mod lib;
 mod validate;
 mod wifi;

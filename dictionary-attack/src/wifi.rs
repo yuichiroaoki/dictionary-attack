@@ -2,7 +2,8 @@ use std::error::Error;
 use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
 // use clap::lazy_static::lazy_static;
-
+use crate::utils;
+use wifi_rs::{prelude::*, WiFi};
 // use regex::Regex;
 
 pub fn get_wifi_name() -> Result<(), Box<dyn Error>> {
@@ -38,7 +39,7 @@ pub fn example_command() {
 	println!("{}", stdout);
 }
 
-pub fn connect_to_wifi(name: &str, password: &str) {
+pub fn connect_to_wifi_with_command(name: &str, password: &str) {
 	let output = Command::new("nmcli")
 		.arg("d")
 		.arg("wifi")
@@ -52,4 +53,26 @@ pub fn connect_to_wifi(name: &str, password: &str) {
 	let stdout = String::from_utf8(output.stdout).unwrap();
 
 	println!("{}", stdout);
+}
+
+pub fn connect_to_wifi() -> Result<(), WifiConnectionError> {
+
+    let config = Some(Config {
+        interface: Some("wlo1"),
+    });
+
+    let mut wifi = WiFi::new(config);
+
+    match wifi.connect(&utils::get_env("WIFI_SSID"), &utils::get_env("PASS")) {
+        Ok(result) => println!(
+            "{}",
+            if result == true {
+                "Connection Successfull."
+            } else {
+                "Invalid password."
+            }
+        ),
+        Err(err) => println!("The following error occurred: {:?}", err),
+    }
+	Ok(())
 }
