@@ -6,3 +6,4 @@ pub fn get_env(key: &str) -> String {
         Err(e) => panic!("couldn't interpret {}: {}", key, e),
     }
 }
+
