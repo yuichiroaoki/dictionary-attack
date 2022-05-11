@@ -29,15 +29,15 @@ pub fn get_wifi_name() -> Result<(), Box<dyn Error>> {
 	Ok(())
 }
 
-pub fn example_command() {
-	let output = Command::new("ls")
-		.stdout(Stdio::piped())
-		.output()
-		.expect("failed to execute process");
-	let stdout = String::from_utf8(output.stdout).unwrap();
+// pub fn example_command() {
+// 	let output = Command::new("ls")
+// 		.stdout(Stdio::piped())
+// 		.output()
+// 		.expect("failed to execute process");
+// 	let stdout = String::from_utf8(output.stdout).unwrap();
 
-	println!("{}", stdout);
-}
+// 	println!("{}", stdout);
+// }
 
 pub fn connect_to_wifi_with_command(name: &str, password: &str) {
 	let output = Command::new("nmcli")

@@ -1,6 +1,5 @@
 use clap::Parser;
 use dotenv::dotenv;
-use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Instant;
@@ -44,7 +43,6 @@ fn main() {
     // wifi::get_wifi_name();
     // wifi::connect_to_wifi(&args.name, &args.password);
 
-    // let (tx, rx) = mpsc::channel();
     let password = args.password;
     let result = validate::validate_password(&password, MAX_PASSWORD_LENGTH).unwrap();
 
@@ -55,27 +53,50 @@ fn main() {
         .text("cracking")
         .start();
 
-    if args.dict {
-        // let mut handles = vec![];
+    if args.wifi {
+        let result = wifi::connect_to_wifi();
+        println!("{:?}", result);
+    }
 
-        // for i in 0..8 {
-        //     if let Ok(lines) = files::read_lines("sample/xato-net-10-million-passwords-dup.txt") {
-        //         let handle = thread::spawn(move || {
-        //             for line in lines.step_by(i * 8) {
-        //                 if let Ok(ip) = line {
-        //                     if result == ip {
-        //                         println!("\nfound {}", result);
-        //                         tx.send(result).unwrap();
-        //                         break;
-        //                     } else {
-        //                         continue;
-        //                     }
-        //                 }
-        //             }
-        //         });
-        //         handle.join().unwrap();
-        //     }
-        // }
+    if args.dict {
+        let mut handles = vec![];
+        let pass = Arc::new(Mutex::new(result));
+        let found = Arc::new(Mutex::new(false));
+
+        for i in 0..8 {
+            let pass = Arc::clone(&pass);
+            let found = Arc::clone(&found);
+
+            if let Ok(lines) = files::read_lines("sample/xato-net-10-million-passwords-dup.txt") {
+                let handle = thread::spawn(move || {
+                    let word = pass.lock().unwrap();
+                    let mut found_key = found.lock().unwrap();
+
+                    for line in lines.step_by(i * 8) {
+                        if *found_key == true {
+                            println!("\n break ");
+                            break;
+                        }
+                        if let Ok(ip) = line {
+                            if *word == ip {
+                                println!("\nfound {}", *word);
+                                *found_key = true;
+                                break;
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+                });
+                handles.push(handle);
+            }
+        }
+
+        for handle in handles {
+            handle.join().unwrap();
+        }
+
+        println!("found flag: {}", *found.lock().unwrap());
     } else {
         let max_count = 100000000;
 
