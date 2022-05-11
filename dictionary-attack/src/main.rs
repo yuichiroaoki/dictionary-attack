@@ -1,10 +1,10 @@
 use clap::Parser;
+use dotenv::dotenv;
 use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
-use dotenv::dotenv;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -23,11 +23,15 @@ struct Args {
     /// password for wifi
     #[clap(long)]
     password: String,
+
+    /// number of threads
+    #[clap(long)]
+    thread: u8,
 }
 
 mod files;
-mod utils;
 mod lib;
+mod utils;
 mod validate;
 mod wifi;
 
@@ -51,9 +55,6 @@ fn main() {
         .text("cracking")
         .start();
 
-
-    let password = Arc::new(Mutex::new(result));
-    let found = Arc::new(Mutex::new(false));
     if args.dict {
         // let mut handles = vec![];
 
@@ -76,22 +77,29 @@ fn main() {
         //     }
         // }
     } else {
-        let mut handles = vec![];
         let max_count = 100000000;
 
+        let pass = Arc::new(Mutex::new(result));
+        let found = Arc::new(Mutex::new(false));
+        let mut handles = vec![];
+
         // 8 threads
-        for m in 1..9 {
-            let password = Arc::clone(&password);
+        for m in 1..args.thread + 1 {
+            let pass = Arc::clone(&pass);
             let found = Arc::clone(&found);
-            let t_handle = thread::spawn(move || {
+
+            let handle = thread::spawn(move || {
                 for i in 0..max_count {
-                    let word = password.lock().unwrap();
+                    let word = pass.lock().unwrap();
                     let mut found_key = found.lock().unwrap();
-                    if *found_key {
+
+                    let idx = (i * args.thread as i64) + (m as i64);
+                    if *found_key == true {
+                        println!("\n break no.{}", idx);
                         break;
                     }
-                    if *word == lib::number_to_string(i * m) {
-                        println!("\nno.{}", i * m);
+                    if *word == lib::number_to_string(idx) {
+                        println!("\nno.{}", idx);
                         println!("found {}", *word);
                         *found_key = true;
                         break;
@@ -100,16 +108,15 @@ fn main() {
                     }
                 }
             });
-            handles.push(t_handle)
+            handles.push(handle);
         }
 
-        for hd in handles {
-            hd.join().unwrap();
+        for handle in handles {
+            handle.join().unwrap();
         }
+
+        println!("found flag: {}", *found.lock().unwrap());
     }
-    // for received in rx {
-    //     println!("Got: {}", received);
-    // }
 
     handle.done();
     let new_now = Instant::now();
