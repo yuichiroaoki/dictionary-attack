@@ -23,3 +23,6 @@ cargo run -- -p --password PASSWORD
 * https://github.com/amcsi/rust-experimenting-password-cracker
 * https://linuxhint.com/3-ways-to-connect-to-wifi-from-the-command-line-on-debian/
 
+### Word list
+https://github.com/danielmiessler/SecLists
+
