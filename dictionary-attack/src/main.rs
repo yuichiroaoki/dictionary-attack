@@ -58,8 +58,6 @@ fn main() {
         println!("{:?}", result);
     }
 
-    let password = Arc::new(Mutex::new(result));
-    let found = Arc::new(Mutex::new(false));
     if args.dict {
         let mut handles = vec![];
         let pass = Arc::new(Mutex::new(result));
