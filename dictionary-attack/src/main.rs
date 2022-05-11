@@ -3,13 +3,13 @@ use dotenv::dotenv;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
 
+mod bruteforce;
+mod dictionary;
 mod files;
 mod lib;
 mod utils;
 mod validate;
 mod wifi;
-mod bruteforce;
-mod dictionary;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -25,12 +25,16 @@ struct Args {
     #[clap(long)]
     wifi: bool,
 
+    /// WiFi dictionary attack mode
+    #[clap(long)]
+    dict_wifi: bool,
+
     /// password for wifi
     #[clap(long)]
     password: String,
 
     /// number of threads
-    #[clap(long)]
+    #[clap(long, default_value_t = 1)]
     thread: u8,
 }
 
@@ -51,9 +55,12 @@ fn main() {
         .text("cracking")
         .start();
 
+    if args.dict_wifi {
+        dictionary::dictionary_attack_wifi(args.thread);
+    }
+
     if args.wifi {
-        let result = wifi::connect_to_wifi();
-        println!("{:?}", result);
+        wifi::connect_to_wifi_with_env();
     }
 
     if args.dict {

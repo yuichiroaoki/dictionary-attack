@@ -55,7 +55,29 @@ pub fn connect_to_wifi_with_command(name: &str, password: &str) {
     println!("{}", stdout);
 }
 
-pub fn connect_to_wifi() -> Result<(), WifiConnectionError> {
+pub fn connect_to_wifi(password: &str) -> Result<(), WifiConnectionError> {
+    let config = Some(Config {
+        interface: Some("wlo1"),
+    });
+
+    let mut wifi = WiFi::new(config);
+
+    match wifi.connect(&utils::get_env("WIFI_SSID"), password) {
+        Ok(result) => println!(
+            "{}",
+            if result == true {
+                "Connection Successfull."
+            } else {
+                "Invalid password."
+            }
+        ),
+        Err(err) => println!("The following error occurred: {:?}", err),
+    }
+    Ok(())
+}
+
+
+pub fn connect_to_wifi_with_env() {
     let config = Some(Config {
         interface: Some("wlo1"),
     });
@@ -73,5 +95,4 @@ pub fn connect_to_wifi() -> Result<(), WifiConnectionError> {
         ),
         Err(err) => println!("The following error occurred: {:?}", err),
     }
-    Ok(())
 }
