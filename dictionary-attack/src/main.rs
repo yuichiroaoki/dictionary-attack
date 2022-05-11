@@ -5,6 +5,12 @@ use std::thread;
 use std::time::Instant;
 use terminal_spinners::{SpinnerBuilder, DOTS};
 
+mod files;
+mod lib;
+mod utils;
+mod validate;
+mod wifi;
+
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
@@ -28,20 +34,12 @@ struct Args {
     thread: u8,
 }
 
-mod files;
-mod lib;
-mod utils;
-mod validate;
-mod wifi;
-
 fn main() {
     dotenv().ok();
 
     let args = Args::parse();
     lib::number_to_string(36);
     const MAX_PASSWORD_LENGTH: usize = 10;
-    // wifi::get_wifi_name();
-    // wifi::connect_to_wifi(&args.name, &args.password);
 
     let password = args.password;
     let result = validate::validate_password(&password, MAX_PASSWORD_LENGTH).unwrap();
@@ -59,44 +57,54 @@ fn main() {
     }
 
     if args.dict {
-        let mut handles = vec![];
         let pass = Arc::new(Mutex::new(result));
         let found = Arc::new(Mutex::new(false));
+        let mut handles = vec![];
 
-        for i in 0..8 {
+        for i in 1..args.thread + 1 {
             let pass = Arc::clone(&pass);
             let found = Arc::clone(&found);
 
-            if let Ok(lines) = files::read_lines("sample/xato-net-10-million-passwords-dup.txt") {
-                let handle = thread::spawn(move || {
-                    let word = pass.lock().unwrap();
-                    let mut found_key = found.lock().unwrap();
+            let handle = thread::spawn(move || {
+                let mut num_of_attempt = 0;
+                if let Ok(mut lines) =
+                    files::read_lines("sample/xato-net-10-million-passwords-dup.txt")
+                {
+                    if i > 1 {
+                        for _ in 1..i {
+                            lines.next();
+                        }
+                    }
 
-                    for line in lines.step_by(i * 8) {
+                    println!("thread started: {}", i);
+                    for line in lines.step_by(args.thread.into()) {
+                        let word = pass.lock().unwrap();
+                        let mut found_key = found.lock().unwrap();
                         if *found_key == true {
-                            println!("\n break ");
+                            println!("\n break, number of attempts: {}", num_of_attempt);
                             break;
                         }
                         if let Ok(ip) = line {
                             if *word == ip {
                                 println!("\nfound {}", *word);
+                                println!("\n break, number of attempts: {}", num_of_attempt);
                                 *found_key = true;
                                 break;
                             } else {
+                                num_of_attempt += 1;
                                 continue;
                             }
                         }
                     }
-                });
-                handles.push(handle);
-            }
+                    println!("\n not found. thread: {}", i);
+                }
+            });
+            handles.push(handle);
         }
 
         for handle in handles {
             handle.join().unwrap();
         }
-
-        println!("found flag: {}", *found.lock().unwrap());
     } else {
         let max_count = 100000000;
 
@@ -140,8 +148,6 @@ fn main() {
         for handle in handles {
             handle.join().unwrap();
         }
-
-        println!("found flag: {}", *found.lock().unwrap());
     }
 
     handle.done();
