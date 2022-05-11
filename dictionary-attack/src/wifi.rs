@@ -7,26 +7,26 @@ use wifi_rs::{prelude::*, WiFi};
 // use regex::Regex;
 
 pub fn get_wifi_name() -> Result<(), Box<dyn Error>> {
-	let stdout = Command::new("iwlist")
-		.arg("wlo1")
-		.arg("scan")
-		.stdout(Stdio::piped())
-		.spawn()?
-		.stdout
-		.expect("failed to execute process");
+    let stdout = Command::new("iwlist")
+        .arg("wlo1")
+        .arg("scan")
+        .stdout(Stdio::piped())
+        .spawn()?
+        .stdout
+        .expect("failed to execute process");
 
-	let reader = BufReader::new(stdout);
+    let reader = BufReader::new(stdout);
 
-	let target_line = reader
-		.lines()
-		.filter_map(|line| line.ok())
-		.filter(|line| line.find("ESSID").is_some())
-		.next();
-	// .for_each(|line| println!("{}", line));
+    let target_line = reader
+        .lines()
+        .filter_map(|line| line.ok())
+        .filter(|line| line.find("ESSID").is_some())
+        .next();
+    // .for_each(|line| println!("{}", line));
 
-	println!("{:?}", target_line);
+    println!("{:?}", target_line);
 
-	Ok(())
+    Ok(())
 }
 
 // pub fn example_command() {

@@ -1,4 +1,3 @@
-
 pub fn validate_password(pass: &String, _max_password_length: usize) -> Result<String, ()> {
     let result: bool = !pass.trim().is_empty() && pass.trim().len() < _max_password_length + 1;
 
